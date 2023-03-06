@@ -7,14 +7,14 @@
 
 import sys
 import pathlib
-from mutagen import mp3, mp4
+from mutagen import mp3, mp4, flac
 
 #fat32 invalid characters
 fat32_bad_chars = "?<>\\:*|/\""
 is_fat32 = True
 
 # TODO: add FLAC to this list
-supported_file_types = ["mp3","m4a","wav"]
+supported_file_types = ["mp3","m4a","wav","flac"]
 path_to_new_music = ["new"]
 
 #file type error
@@ -44,6 +44,18 @@ def get_mp4_tags(file_name):
     
     return (song,artist,album)
 
+def get_flac_tags(file_name):
+
+    m_handle = flac.FLAC(file_name)
+
+    #song, artist, album
+    song =  m_handle.tags['title'][0]
+    artist = m_handle.tags['artist'][0]
+    album = m_handle.tags['album'][0]
+
+
+    return (song, artist, album)
+
 #getting mp3 or mp4 tags
 def get_tags(file_name,file_type):
     
@@ -56,7 +68,13 @@ def get_tags(file_name,file_type):
         
     elif file_type == "wav":
         raise FileExtensionError(file_type+" is not tagged")
-        return
+
+    elif file_type == "flac":
+        return get_flac_tags(file_name)
+    else:
+        raise FileExtensionError(file_type+" not recognized")
+    
+    return
         
         
 #capitalize tokenized sentence, return
